@@ -1,0 +1,354 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Flow Studio — AI Text to Video</title>
+<meta name="description" content="A modern cinematic text-to-video studio interface with prompt generation, scenes, references, quality controls, responsive media workspace and AdSense-ready advertising slots.">
+<meta name="robots" content="index,follow">
+<meta name="theme-color" content="#000000">
+<link rel="canonical" href="https://example.com/flow-studio">
+<meta property="og:title" content="Flow Studio — AI Text to Video">
+<meta property="og:description" content="Create cinematic video concepts from text with scenes, references and quality controls.">
+<meta property="og:type" content="website">
+
+<!-- Replace the example publisher ID with your real Google AdSense publisher ID. -->
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-XXXXXXXXXXXXXXXX" crossorigin="anonymous"></script>
+
+<style>
+:root{
+  --bg:#000;--surface:#0c0c0d;--surface2:#151516;--surface3:#1d1d1f;
+  --line:#29292b;--text:#f5f5f5;--muted:#9a9a9e;--blue:#8ab4f8;
+  --purple:#7d4de8;--cyan:#62d8ff;--radius:16px;
+}
+*{box-sizing:border-box}
+html,body{margin:0;background:#000;color:var(--text);font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
+button,input,textarea,select{font:inherit}
+button{cursor:pointer}
+button:disabled{opacity:.45;cursor:not-allowed}
+.app{min-height:100vh;display:grid;grid-template-rows:64px 1fr}
+.topbar{height:64px;border-bottom:1px solid #151515;display:flex;align-items:center;padding:0 18px;gap:20px;background:#000;position:sticky;top:0;z-index:50}
+.brand{font-size:20px;font-weight:650;letter-spacing:-.7px;white-space:nowrap}
+.brand em{font-style:normal;color:#8f8f94}
+.top-links{display:flex;gap:10px;margin-left:auto;align-items:center}
+.pill{height:38px;border:1px solid var(--line);background:#0c0c0d;color:#eee;border-radius:22px;padding:0 18px;display:inline-flex;align-items:center;gap:8px}
+.icon-btn{height:38px;width:38px;border:0;border-radius:50%;background:transparent;color:#eee;font-size:20px}
+.avatar{width:36px;height:36px;border-radius:50%;background:#9d796a;display:grid;place-items:center;color:#fff;font-weight:700}
+.layout{display:grid;grid-template-columns:235px minmax(0,1fr);min-height:calc(100vh - 64px)}
+.sidebar{border-right:1px solid #141414;padding:20px 10px;display:flex;flex-direction:column;gap:6px;background:#020202}
+.project{padding:8px 12px 18px;color:#eee;font-size:13px;display:flex;align-items:center;justify-content:space-between}
+.side-item{border:0;background:transparent;color:#ddd;text-align:left;padding:13px 14px;border-radius:12px;display:flex;gap:12px;align-items:center;font-weight:600;font-size:13px}
+.side-item:hover,.side-item.active{background:#202023}
+.side-icon{width:20px;text-align:center;color:#ddd}
+.sidebar-sep{height:1px;background:#202020;margin:12px 8px}
+.side-bottom{margin-top:auto}
+.main{min-width:0;padding:22px 22px 130px;position:relative}
+.toolbar{display:flex;align-items:center;gap:12px;margin-bottom:18px}
+.search{flex:1;max-width:600px;height:42px;background:#101011;border:1px solid var(--line);border-radius:22px;display:flex;align-items:center;padding:0 15px;gap:10px;color:#777}
+.search input{border:0;outline:0;background:transparent;color:#eee;width:100%}
+.toolbar .round{height:42px;width:42px;border-radius:50%;border:1px solid var(--line);background:#111;color:#eee}
+.hero{border:1px solid #1c1c1e;border-radius:20px;overflow:hidden;background:#080808;position:relative;min-height:270px;margin-bottom:22px}
+.hero-bg{position:absolute;inset:0;background:
+ radial-gradient(circle at 75% 35%,rgba(237,132,61,.45),transparent 23%),
+ radial-gradient(circle at 55% 60%,rgba(42,116,156,.4),transparent 35%),
+ linear-gradient(115deg,#142119,#375e62 40%,#c07848 100%);filter:saturate(.8)}
+.hero-bg:after{content:"";position:absolute;inset:0;background:linear-gradient(90deg,rgba(0,0,0,.88),rgba(0,0,0,.35),rgba(0,0,0,.1))}
+.hero-copy{position:relative;z-index:2;padding:45px 42px;max-width:670px}
+.eyebrow{font-size:12px;color:#d2d2d5;margin-bottom:14px}
+.hero h1{font-size:clamp(32px,5vw,60px);line-height:1.02;letter-spacing:-2.8px;margin:0 0 13px;font-weight:600}
+.hero p{color:#ddd;max-width:610px;margin:0 0 22px}
+.primary{border:0;background:#fff;color:#111;border-radius:24px;padding:12px 19px;font-weight:700}
+.media-head{display:flex;justify-content:space-between;align-items:center;margin:20px 0 12px}
+.media-head h2{font-size:20px;margin:0}
+.media-head span{color:#777;font-size:12px}
+.grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px}
+.media-card{background:#101011;border:1px solid #202022;border-radius:14px;overflow:hidden;min-width:0}
+.thumb{aspect-ratio:16/10;position:relative;overflow:hidden;background:#151515}
+.thumb canvas{width:100%;height:100%;display:block}
+.badge-small{position:absolute;left:9px;top:9px;background:rgba(0,0,0,.6);backdrop-filter:blur(8px);padding:5px 8px;border-radius:8px;font-size:10px}
+.card-meta{padding:11px 12px}
+.card-title{font-size:13px;font-weight:650;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.card-sub{font-size:11px;color:#777;margin-top:3px}
+.workspace{margin-top:24px;display:grid;grid-template-columns:minmax(0,1fr) 330px;gap:15px}
+.panel{border:1px solid #222225;background:#0a0a0b;border-radius:18px;overflow:hidden}
+.panel-head{padding:15px 16px;border-bottom:1px solid #202022;display:flex;align-items:center;justify-content:space-between}
+.panel-head strong{font-size:13px}.panel-head small{color:#777}
+.scenes{padding:14px;display:flex;gap:10px;overflow:auto}
+.scene{min-width:180px;max-width:210px;background:#111113;border:1px solid #262629;border-radius:13px;overflow:hidden}
+.scene.active{border-color:#777}
+.scene .thumb{aspect-ratio:16/9}
+.scene p{font-size:11px;color:#bbb;padding:0 10px 11px;margin:8px 0 0}
+.scene small{display:block;color:#666;padding:0 10px 11px}
+.inspector{padding:15px}
+.control{margin-bottom:17px}
+.control label{font-size:11px;color:#858589;display:block;margin-bottom:7px}
+.control select,.control input,.control textarea{width:100%;background:#141416;border:1px solid #29292c;color:#eee;border-radius:10px;padding:10px;outline:none}
+.control textarea{resize:vertical;min-height:90px}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:9px}
+.range-row{display:flex;align-items:center;gap:8px}.range-row input{padding:0;background:transparent;border:0}.range-row output{font-size:11px;color:#888}
+.check{display:flex;align-items:center;gap:8px;color:#aaa;font-size:12px}.check input{width:auto}
+.ad{min-height:80px;border:1px dashed #252529;background:#070707;border-radius:13px;display:flex;align-items:center;justify-content:center;position:relative;margin:20px 0;color:#555;font-size:11px;overflow:hidden}
+.ad label{position:absolute;top:7px;left:10px;font-size:8px;letter-spacing:1px;color:#4f4f54}
+.composer-wrap{position:fixed;left:235px;right:0;bottom:0;z-index:40;padding:15px 22px 18px;background:linear-gradient(transparent,#000 35%);pointer-events:none}
+.composer{pointer-events:auto;max-width:900px;margin:auto;border:1px solid #343438;border-radius:19px;background:#16171a;box-shadow:0 20px 70px rgba(0,0,0,.7);padding:12px}
+.composer textarea{width:100%;border:0;background:transparent;color:#eee;resize:none;outline:0;min-height:48px;padding:4px 7px;font-size:14px}
+.composer-bottom{display:flex;align-items:center;gap:8px}
+.circle{width:34px;height:34px;border-radius:50%;border:0;background:#292a2d;color:#eee}
+.model{margin-left:auto;display:flex;align-items:center;gap:6px;border-radius:20px;background:#24262a;color:#ddd;padding:8px 11px;font-size:11px}
+.generate{height:38px;width:38px;border-radius:50%;border:0;background:#eee;color:#111;font-weight:900}
+.status{font-size:11px;color:#888;padding:6px 5px 0;min-height:20px}
+.progress{height:3px;background:#222;border-radius:99px;overflow:hidden}.progress i{display:block;width:0;height:100%;background:linear-gradient(90deg,#7b43e6,#63d9ff);transition:width .2s}
+.mobile-nav{display:none}
+.modal{position:fixed;inset:0;background:rgba(0,0,0,.75);backdrop-filter:blur(8px);z-index:100;display:none;align-items:center;justify-content:center;padding:20px}
+.modal.open{display:flex}.modal-box{width:min(600px,100%);background:#111113;border:1px solid #2b2b2f;border-radius:20px;padding:20px}.modal-box h3{margin-top:0}
+.toast{position:fixed;right:20px;top:78px;background:#f4f4f4;color:#111;padding:10px 15px;border-radius:12px;font-size:12px;transform:translateY(-20px);opacity:0;transition:.25s;z-index:120}.toast.show{transform:none;opacity:1}
+@media(max-width:1000px){.layout{grid-template-columns:74px 1fr}.sidebar .project span,.side-item span:not(.side-icon),.sidebar-sep{display:none}.side-item{justify-content:center}.composer-wrap{left:74px}.grid{grid-template-columns:repeat(3,1fr)}.workspace{grid-template-columns:1fr}.inspector{display:grid;grid-template-columns:repeat(2,1fr);gap:15px}.inspector .control{margin:0}}
+@media(max-width:700px){.app{grid-template-rows:58px}.topbar{height:58px;padding:0 11px}.top-links .pill{display:none}.layout{display:block;min-height:calc(100vh - 58px)}.sidebar{display:none}.main{padding:13px 12px 150px}.toolbar{margin-bottom:12px}.toolbar .round:nth-last-child(-n+2){display:none}.hero{min-height:250px}.hero-copy{padding:32px 23px}.hero h1{letter-spacing:-1.5px}.grid{grid-template-columns:repeat(2,1fr);gap:9px}.workspace{margin-top:18px}.inspector{display:block}.composer-wrap{left:0;padding:9px 10px 12px}.composer{border-radius:17px}.media-head{margin-top:15px}.mobile-nav{display:flex;position:fixed;bottom:0;left:0;right:0;z-index:35;height:54px;background:#090909;border-top:1px solid #202020;justify-content:space-around;align-items:center}.mobile-nav button{background:transparent;border:0;color:#888;font-size:10px}.mobile-nav button b{display:block;color:#ddd;font-size:17px;margin-bottom:1px}}
+@media(max-width:420px){.grid{grid-template-columns:1fr}.hero-copy{padding:27px 18px}.hero p{font-size:13px}.top-links .icon-btn{display:none}}
+</style>
+</head>
+<body>
+<div class="app">
+<header class="topbar">
+  <div class="brand">Flow Studio <em>AI</em></div>
+  <div class="top-links">
+    <button class="pill" id="musicBtn">▶ Flow Music</button>
+    <button class="pill" id="tvBtn">▣ Flow TV</button>
+    <button class="icon-btn" aria-label="Community">◉</button>
+    <button class="icon-btn" aria-label="Help" id="helpBtn">?</button>
+    <button class="icon-btn" aria-label="Settings" id="settingsBtn">⋮</button>
+    <div class="avatar">I</div>
+  </div>
+</header>
+
+<div class="layout">
+<aside class="sidebar">
+  <div class="project"><span>Sep 10 · My Project</span><b>⋮</b></div>
+  <button class="side-item active"><span class="side-icon">▦</span><span>All media</span></button>
+  <button class="side-item"><span class="side-icon">♙</span><span>Characters</span></button>
+  <button class="side-item"><span class="side-icon">▣</span><span>Scenes</span></button>
+  <div class="sidebar-sep"></div>
+  <button class="side-item" id="toolsBtn"><span class="side-icon">✣</span><span>Tools</span></button>
+  <div class="side-bottom">
+    <button class="side-item"><span class="side-icon">▢</span><span>Trash</span></button>
+    <button class="side-item"><span class="side-icon">◧</span><span>Collapse</span></button>
+  </div>
+</aside>
+
+<main class="main">
+  <div class="toolbar">
+    <div class="search">⌕ <input id="search" placeholder="Search media"></div>
+    <button class="round" id="filterBtn">≡</button>
+    <button class="round" id="newBtn">＋</button>
+    <button class="round" id="settings2">⚙</button>
+  </div>
+
+  <section class="hero">
+    <div class="hero-bg"></div>
+    <div class="hero-copy">
+      <div class="eyebrow">INTRODUCING • CINEMATIC VIDEO GENERATION</div>
+      <h1>Create your next story.</h1>
+      <p>Describe a scene, build connected shots, add references, and generate a cinematic concept from one workspace.</p>
+      <button class="primary" id="heroCreate">Create a new project</button>
+    </div>
+  </section>
+
+  <div class="ad">
+    <label>ADVERTISEMENT</label>
+    <!-- AdSense unit #1 — replace both values with your real IDs -->
+    <ins class="adsbygoogle" style="display:block;width:100%;min-height:70px"
+      data-ad-client="ca-pub-XXXXXXXXXXXXXXXX"
+      data-ad-slot="1111111111"
+      data-ad-format="auto" data-full-width-responsive="true"></ins>
+    <script>(adsbygoogle=window.adsbygoogle||[]).push({});</script>
+  </div>
+
+  <div class="media-head"><h2>My creations</h2><span id="mediaCount">4 items</span></div>
+  <section class="grid" id="mediaGrid"></section>
+
+  <section class="workspace">
+    <div class="panel">
+      <div class="panel-head"><strong>Storyboard</strong><small id="sceneCount">4 scenes</small></div>
+      <div class="scenes" id="sceneRow"></div>
+    </div>
+    <aside class="panel">
+      <div class="panel-head"><strong>Generation settings</strong><small>Project</small></div>
+      <div class="inspector">
+        <div class="control">
+          <label>VIDEO QUALITY</label>
+          <select id="quality"><option>1080p · Full HD</option><option>720p · HD</option><option>1440p · 2K</option><option>2160p · 4K</option></select>
+        </div>
+        <div class="control">
+          <label>IMAGE QUALITY</label>
+          <select id="imageQuality"><option>Ultra</option><option selected>High</option><option>Balanced</option><option>Fast</option></select>
+        </div>
+        <div class="control">
+          <label>ASPECT RATIO</label>
+          <select id="ratio"><option>16:9 Landscape</option><option>9:16 Portrait</option><option>1:1 Square</option><option>4:3 Classic</option></select>
+        </div>
+        <div class="control">
+          <label>MODEL</label>
+          <select id="model"><option>Omni Video</option><option>Cinematic Pro</option><option>Fast Preview</option></select>
+        </div>
+        <div class="control">
+          <label>CLIP LENGTH</label>
+          <div class="range-row"><input id="duration" type="range" min="4" max="20" value="10"><output id="durationOut">10 sec</output></div>
+        </div>
+        <div class="control">
+          <label>MOTION</label>
+          <select id="motion"><option>Cinematic</option><option>Dynamic</option><option>Subtle</option><option>Static</option></select>
+        </div>
+        <div class="control"><label>OPTIONS</label><label class="check"><input type="checkbox" id="audio" checked> Generate ambient audio</label><label class="check"><input type="checkbox" id="refs"> Preserve reference style</label></div>
+      </div>
+    </aside>
+  </section>
+
+  <div class="ad">
+    <label>ADVERTISEMENT</label>
+    <!-- AdSense unit #2 -->
+    <ins class="adsbygoogle" style="display:block;width:100%;min-height:70px"
+      data-ad-client="ca-pub-XXXXXXXXXXXXXXXX"
+      data-ad-slot="2222222222"
+      data-ad-format="auto" data-full-width-responsive="true"></ins>
+    <script>(adsbygoogle=window.adsbygoogle||[]).push({});</script>
+  </div>
+</main>
+</div>
+</div>
+
+<div class="composer-wrap">
+  <div class="composer">
+    <textarea id="prompt" placeholder="What do you want to create? Try: A cinematic shot of a futuristic city at sunset..."></textarea>
+    <div class="composer-bottom">
+      <button class="circle" id="attachBtn" title="Add reference">＋</button>
+      <button class="pill" id="agentBtn" style="height:34px;padding:0 12px;font-size:11px">Agent</button>
+      <div class="model" id="modelChip">✦ <span>Omni Video</span> · <b id="qualityChip">1080p</b></div>
+      <button class="generate" id="generateBtn" title="Generate">➜</button>
+    </div>
+    <div class="status" id="status">Ready to create. Add a prompt to generate a storyboard preview.</div>
+    <div class="progress"><i id="progress"></i></div>
+  </div>
+</div>
+
+<nav class="mobile-nav">
+  <button><b>▦</b>Media</button><button><b>♙</b>Characters</button><button><b>▣</b>Scenes</button><button id="mobileTools"><b>✣</b>Tools</button>
+</nav>
+
+<div class="toast" id="toast"></div>
+<div class="modal" id="modal">
+  <div class="modal-box">
+    <h3 id="modalTitle">Flow Studio</h3>
+    <p id="modalText" style="color:#aaa;font-size:13px"></p>
+    <button class="primary" id="closeModal">Close</button>
+  </div>
+</div>
+
+<script>
+(() => {
+  const $=id=>document.getElementById(id);
+  const mediaGrid=$("mediaGrid"), sceneRow=$("sceneRow");
+  const palette=[
+    ["#122c35","#df985b","#213d2e"],["#111d36","#7c9fd1","#5e314e"],
+    ["#20251d","#c9aa65","#31534b"],["#1b1427","#8b6bd1","#c65e58"],
+    ["#13222a","#61a8c7","#e8ba73"],["#251b16","#9f6342","#d2bd8b"]
+  ];
+  const prompts=[
+    "Futuristic city at golden hour",
+    "A lone traveler crossing a desert",
+    "Cinematic ocean storm",
+    "Magical forest at night",
+    "Retro car on a coastal road",
+    "Tiny robot exploring a kitchen"
+  ];
+  let items=[...prompts.slice(0,4)];
+  let scenes=["Opening wide shot","Character enters frame","Close-up detail","Final cinematic reveal"];
+
+  function drawThumb(canvas,seed=0,label=""){
+    const [a,b,c]=palette[seed%palette.length], ctx=canvas.getContext("2d");
+    const w=canvas.width=640,h=canvas.height=400;
+    const g=ctx.createLinearGradient(0,0,w,h);g.addColorStop(0,a);g.addColorStop(.55,b);g.addColorStop(1,c);
+    ctx.fillStyle=g;ctx.fillRect(0,0,w,h);
+    for(let i=0;i<7;i++){
+      ctx.fillStyle=`rgba(255,255,255,${.03+i*.006})`;
+      ctx.beginPath();ctx.arc((seed*117+i*93)%w,(seed*71+i*51)%h,30+i*13,0,Math.PI*2);ctx.fill();
+    }
+    ctx.fillStyle="rgba(0,0,0,.3)";ctx.fillRect(0,h*.68,w,h*.32);
+    ctx.fillStyle="#fff";ctx.font="600 24px Arial";ctx.fillText(label.slice(0,34),24,h-34);
+  }
+  function card(title,i){
+    const el=document.createElement("article");el.className="media-card";el.dataset.title=title.toLowerCase();
+    el.innerHTML=`<div class="thumb"><canvas width="640" height="400"></canvas><span class="badge-small">VIDEO</span></div><div class="card-meta"><div class="card-title">${escapeHtml(title)}</div><div class="card-sub">Generated concept · ${i+1}</div></div>`;
+    drawThumb(el.querySelector("canvas"),i,title);return el;
+  }
+  function renderMedia(){
+    mediaGrid.innerHTML="";items.forEach((x,i)=>mediaGrid.appendChild(card(x,i)));
+    $("mediaCount").textContent=items.length+" items";
+  }
+  function renderScenes(){
+    sceneRow.innerHTML="";
+    scenes.forEach((x,i)=>{
+      const el=document.createElement("article");el.className="scene"+(i===0?" active":"");
+      el.innerHTML=`<div class="thumb"><canvas width="640" height="360"></canvas></div><p>${escapeHtml(x)}</p><small>Shot ${i+1} · 10s</small>`;
+      drawThumb(el.querySelector("canvas"),i+1,x);sceneRow.appendChild(el);
+    });
+    $("sceneCount").textContent=scenes.length+" scenes";
+  }
+  function escapeHtml(s){return s.replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[m]))}
+  function toast(msg){const t=$("toast");t.textContent=msg;t.classList.add("show");setTimeout(()=>t.classList.remove("show"),2200)}
+  function modal(title,text){$("modalTitle").textContent=title;$("modalText").textContent=text;$("modal").classList.add("open")}
+  function sync(){
+    const q=$("quality").value;$("qualityChip").textContent=q.split(" ")[0];
+    $("modelChip").querySelector("span").textContent=$("model").value;
+    $("durationOut").textContent=$("duration").value+" sec";
+  }
+  function generate(){
+    const prompt=$("prompt").value.trim();
+    if(!prompt){toast("Write a prompt first.");$("prompt").focus();return}
+    const btn=$("generateBtn"),p=$("progress"),status=$("status");
+    btn.disabled=true;p.style.width="0%";status.textContent="Planning scenes and visual references…";
+    let n=0;const timer=setInterval(()=>{
+      n+=10;p.style.width=n+"%";
+      if(n===30)status.textContent="Generating cinematic frames…";
+      if(n===65)status.textContent="Connecting shots and motion…";
+      if(n>=100){
+        clearInterval(timer);btn.disabled=false;
+        const title=prompt.length>42?prompt.slice(0,42)+"…":prompt;
+        items.unshift(title);items=items.slice(0,8);
+        scenes=[
+          "Establishing shot",
+          "Main action: "+(prompt.split(" ").slice(0,5).join(" ")),
+          "Cinematic close-up",
+          "Final reveal"
+        ];
+        renderMedia();renderScenes();status.textContent="Generation complete. Preview storyboard created.";
+        toast("New storyboard generated");
+      }
+    },180);
+  }
+
+  $("generateBtn").onclick=generate;
+  $("heroCreate").onclick=()=>$("prompt").focus();
+  $("newBtn").onclick=()=>$("prompt").focus();
+  $("attachBtn").onclick=()=>toast("Reference upload panel ready — connect your storage/API here.");
+  $("agentBtn").onclick=()=>modal("Agent mode","Connect this button to your AI orchestration API to plan shots, references, continuity and edits automatically.");
+  $("helpBtn").onclick=()=>modal("How to use","Describe the scene in the prompt, choose quality and aspect ratio, then press the arrow to generate a storyboard preview. This front-end is API-ready but does not call a paid AI video service by itself.");
+  $("settingsBtn").onclick=()=>modal("Settings","Add your API endpoint, authentication layer and generation provider in the JavaScript backend integration.");
+  $("settings2").onclick=()=>modal("Project settings","Choose model, resolution, image quality, clip duration and motion from the generation settings panel.");
+  $("musicBtn").onclick=()=>toast("Music workspace opened");
+  $("tvBtn").onclick=()=>toast("TV workspace opened");
+  $("filterBtn").onclick=()=>toast("Filter menu opened");
+  $("toolsBtn").onclick=()=>modal("Tools","Add tools such as camera controls, character references, image remix, video extension and audio generation here.");
+  $("mobileTools").onclick=()=>modal("Tools","Your tools panel can be connected to image, video and audio APIs.");
+  $("closeModal").onclick=()=>$("modal").classList.remove("open");
+  $("modal").onclick=e=>{if(e.target===$("modal"))$("modal").classList.remove("open")};
+  $("duration").oninput=sync;$("quality").onchange=sync;$("model").onchange=sync;
+  $("search").oninput=e=>{
+    const q=e.target.value.toLowerCase();
+    [...mediaGrid.children].forEach(c=>c.style.display=c.dataset.title.includes(q)?"":"none");
+  };
+  $("prompt").addEventListener("keydown",e=>{if((e.ctrlKey||e.metaKey)&&e.key==="Enter")generate()});
+  renderMedia();renderScenes();sync();
+})();
+</script>
+</body>
+</html>
